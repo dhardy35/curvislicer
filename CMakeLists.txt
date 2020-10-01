@@ -14,35 +14,6 @@ INCLUDE_DIRECTORIES(
 
 ####################################
 
-ADD_EXECUTABLE(curvislice_osqp
-        src/main.cpp
-        src/gcode.h
-        src/gcode.cpp
-        src/helpers.h
-        src/TetMesh.h
-        src/TetMesh.cpp
-        src/thicknesses.h
-        src/MeshFormat_msh.h
-        src/MeshFormat_msh.cpp
-        )
-
-INSTALL(
-  TARGETS curvislice_osqp
-  RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin
-)
-
-set_target_properties(curvislice_osqp
-  PROPERTIES
-    CXX_STANDARD 17
-    CXX_EXTENSIONS OFF
-)
-
-target_link_libraries(curvislice_osqp SolverWrapper LibSL)
-
-target_compile_options(curvislice_osqp PRIVATE -DOSQP)
-
-####################################
-
 if (BUILD_WITH_GRB)
   ADD_EXECUTABLE(curvislice_grb
     src/main.cpp
@@ -71,6 +42,35 @@ if (BUILD_WITH_GRB)
 
   target_compile_options(curvislice_grb PRIVATE -DGRB)
   target_compile_definitions(curvislice_grb PUBLIC "-DHAS_GUROBI")
+
+else() #OSQP
+  ADD_EXECUTABLE(curvislice_osqp
+        src/main.cpp
+        src/gcode.h
+        src/gcode.cpp
+        src/helpers.h
+        src/TetMesh.h
+        src/TetMesh.cpp
+        src/thicknesses.h
+        src/MeshFormat_msh.h
+        src/MeshFormat_msh.cpp
+        )
+
+  INSTALL(
+    TARGETS curvislice_osqp
+    RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/bin
+  )
+
+  set_target_properties(curvislice_osqp
+    PROPERTIES
+      CXX_STANDARD 17
+      CXX_EXTENSIONS OFF
+  )
+
+  target_link_libraries(curvislice_osqp SolverWrapper LibSL)
+
+  target_compile_options(curvislice_osqp PRIVATE -DOSQP)
+
 endif(BUILD_WITH_GRB)
 
 ####################################
