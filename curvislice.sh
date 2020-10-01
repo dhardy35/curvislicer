@@ -1,3 +1,5 @@
+#!/bin/bash
+
 gurobi=0
 
 volumic=0
@@ -30,7 +32,7 @@ fi
 model=${arg%.*}
 
 echo Generate tetmesh "from $model.stl" ...
-./toTetmesh.sh $model
+sh ./toTetmesh.sh $model
 echo Done!
 
 echo Optimize...
@@ -44,18 +46,18 @@ fi
 echo Done!
 
 echo Prepare lua for IceSL
-./luaGenerator.sh $model $volumic $nozzle $layer $filament $ironing
+sh ./luaGenerator.sh $model $volumic $nozzle $layer $filament $ironing
 
-if [ -e "~/.icesl/icesl-printers/fff/curvi" ]
+if [ -d ~/.icesl/icesl-printers/fff/curvi ]
 then
   echo "'curvi' printer profile already exist"
 else
   echo Create 'curvi' printer profile for IceSL
-  cp -r "./resources/curvi" "~/icesl/icesl-printers/fff/curvi"
+  mkdir -p ~/.icesl/icesl-printers/fff
+  cp -r ./resources/curvi ~/.icesl/icesl-printers/fff/curvi
 fi
 
-./tools/icesl/bin/icesl-slicer settings.lua --service
-
+./tools/icesl/bin/IceSL-slicer settings.lua --service
 ./bin/uncurve -l $layer --gcode $model
 
 clear
